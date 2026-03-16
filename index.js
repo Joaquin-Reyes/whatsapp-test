@@ -10,7 +10,7 @@ app.post("/whatsapp", async (req, res) => {
     const { telefono, nombre } = req.body;
 
     const response = await axios.post(
-      "https://graph.facebook.com/v19.0/PHONE_NUMBER_ID/messages",
+      "https://graph.facebook.com/v19.0/996052293598272/messages",
       {
         messaging_product: "whatsapp",
         to: telefono,
