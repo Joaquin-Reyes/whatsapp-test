@@ -2,19 +2,23 @@ const express = require("express");
 const axios = require("axios");
 
 const app = express();
-
 app.use(express.json());
 
-// ===== CONFIGURACIÓN =====
+// ===== CONFIG =====
 const PHONE_NUMBER_ID = "996052293598272";
 
-// ===== ENDPOINT =====
+// ===== TEST ENDPOINT =====
+app.get("/", (req, res) => {
+  res.send("Servidor funcionando");
+});
+
+// ===== WHATSAPP ENDPOINT =====
 app.post("/whatsapp", async (req, res) => {
   try {
 
     const { telefono } = req.body;
 
-    console.log("📩 Teléfono recibido:", telefono);
+    console.log("Telefono recibido:", telefono);
 
     const response = await axios.post(
       `https://graph.facebook.com/v19.0/${PHONE_NUMBER_ID}/messages`,
@@ -37,26 +41,19 @@ app.post("/whatsapp", async (req, res) => {
       }
     );
 
-    console.log("✅ WhatsApp enviado:", response.data);
+    console.log("WhatsApp enviado");
 
-    res.json({
-      status: "ok",
-      data: response.data
-    });
+    res.json(response.data);
 
   } catch (error) {
 
-    console.log("❌ Error:", error.response?.data || error.message);
+    console.log("ERROR:", error.response?.data || error.message);
 
-    res.status(500).json({
-      status: "error",
-      error: error.response?.data || error.message
-    });
-
+    res.status(500).json(error.response?.data || error.message);
   }
 });
 
-// ===== SERVIDOR =====
+// ===== SERVER =====
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
