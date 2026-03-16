@@ -5,17 +5,16 @@ const app = express();
 
 app.use(express.json());
 
-// ===== CONFIG =====
-const PHONE_NUMBER_ID = "996052293598272"; // poné tu ID acá
+// ===== CONFIGURACIÓN =====
+const PHONE_NUMBER_ID = "996052293598272";
 
 // ===== ENDPOINT =====
 app.post("/whatsapp", async (req, res) => {
-
   try {
 
-    const { telefono, nombre, servicio, fecha, hora } = req.body;
+    const { telefono } = req.body;
 
-    console.log("📩 Datos recibidos:", req.body);
+    console.log("📩 Teléfono recibido:", telefono);
 
     const response = await axios.post(
       `https://graph.facebook.com/v19.0/${PHONE_NUMBER_ID}/messages`,
@@ -24,21 +23,10 @@ app.post("/whatsapp", async (req, res) => {
         to: telefono,
         type: "template",
         template: {
-          name: "recordatorio_turno",
+          name: "hello_world",
           language: {
-            code: "es_AR"
-          },
-          components: [
-            {
-              type: "body",
-              parameters: [
-                { type: "text", text: nombre },
-                { type: "text", text: servicio },
-                { type: "text", text: fecha },
-                { type: "text", text: hora }
-              ]
-            }
-          ]
+            code: "en_US"
+          }
         }
       },
       {
@@ -51,18 +39,24 @@ app.post("/whatsapp", async (req, res) => {
 
     console.log("✅ WhatsApp enviado:", response.data);
 
-    res.json(response.data);
+    res.json({
+      status: "ok",
+      data: response.data
+    });
 
   } catch (error) {
 
     console.log("❌ Error:", error.response?.data || error.message);
 
-    res.status(500).json(error.response?.data || { error: error.message });
-  }
+    res.status(500).json({
+      status: "error",
+      error: error.response?.data || error.message
+    });
 
+  }
 });
 
-// ===== SERVER =====
+// ===== SERVIDOR =====
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
