@@ -4,21 +4,21 @@ const axios = require("axios");
 const app = express();
 app.use(express.json());
 
-// ===== CONFIG =====
+// ===== CONFIGURACIÓN =====
 const PHONE_NUMBER_ID = "996052293598272";
 
-// ===== TEST ENDPOINT =====
+// ===== ENDPOINT DE PRUEBA =====
 app.get("/", (req, res) => {
   res.send("Servidor funcionando");
 });
 
-// ===== WHATSAPP ENDPOINT =====
+// ===== ENDPOINT WHATSAPP =====
 app.post("/whatsapp", async (req, res) => {
   try {
 
     const { telefono } = req.body;
 
-    console.log("Telefono recibido:", telefono);
+    console.log("📩 Teléfono recibido:", telefono);
 
     const response = await axios.post(
       `https://graph.facebook.com/v19.0/${PHONE_NUMBER_ID}/messages`,
@@ -41,20 +41,27 @@ app.post("/whatsapp", async (req, res) => {
       }
     );
 
-    console.log("WhatsApp enviado");
+    console.log("✅ WhatsApp enviado:", response.data);
 
-    res.json(response.data);
+    res.json({
+      status: "ok",
+      data: response.data
+    });
 
   } catch (error) {
 
-    console.log("ERROR:", error.response?.data || error.message);
+    console.log("❌ Error:", error.response?.data || error.message);
 
-    res.status(500).json(error.response?.data || error.message);
+    res.status(500).json({
+      status: "error",
+      error: error.response?.data || error.message
+    });
+
   }
 });
 
-// ===== SERVER =====
-const PORT = process.env.PORT || 3000;
+// ===== SERVIDOR (PUERTO 3000 PARA RAILWAY) =====
+const PORT = 3000;
 
 app.listen(PORT, () => {
   console.log("Servidor corriendo en puerto", PORT);
